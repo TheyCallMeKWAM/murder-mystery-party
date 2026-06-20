@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: #25070d; }
+    @keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+    @keyframes sealPop { 0% { transform: scale(.4) rotate(-12deg); opacity: 0; } 60% { transform: scale(1.08) rotate(3deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+    input::placeholder, textarea::placeholder { color: rgba(243,233,210,.32); font-style: italic; }
+    select option { background: #2a0a11; color: #f3e9d2; }
+  </style>
+</helmet>
+<div style="min-height:100vh;width:100%;padding:28px 16px 48px;background:radial-gradient(ellipse 120% 80% at 50% -10%, #6a1822 0%, #43101a 42%, #2a080f 78%, #1f0509 100%);font-family:'EB Garamond',Georgia,serif;display:flex;justify-content:center;align-items:flex-start;">
+  <div style="width:100%;max-width:460px;">
+
+    <!-- ============ FORM VIEW ============ -->
+    <sc-if value="{{ isForm }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative;border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.85),rgba(201,162,75,.25) 30%,rgba(201,162,75,.18) 70%,rgba(201,162,75,.7));box-shadow:0 24px 60px -18px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);">
+      <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12 0%,#240810 100%);overflow:hidden;">
+
+        <!-- marquee header -->
+        <div style="padding:22px 22px 24px;text-align:center;background:radial-gradient(ellipse 100% 140% at 50% 0%, rgba(201,162,75,.12), transparent 70%);">
+          <div style="display:flex;justify-content:center;gap:11px;margin-bottom:18px;animation:twinkle 2.6s ease-in-out infinite;">
+            <sc-for list="{{ bulbs }}" as="b" hint-placeholder-count="9">
+              <span style="width:9px;height:9px;border-radius:50%;background:radial-gradient(circle at 35% 30%, #fff4d2, #e6c878 45%, #b88a2e);box-shadow:0 0 7px 1px rgba(230,200,120,.7);display:block;"></span>
+            </sc-for>
+          </div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:6px;">Now Showing</div>
+          <h1 style="font-family:'Cinzel',serif;font-weight:700;font-size:38px;line-height:1;margin:0;color:#e9cf8a;text-shadow:0 2px 14px rgba(201,162,75,.35);letter-spacing:.02em;">Who Dunnit?</h1>
+          <div style="font-family:'EB Garamond',serif;font-size:16px;color:#e7d9b8;margin-top:12px;max-width:300px;margin-left:auto;margin-right:auto;line-height:1.45;">A Murder at the Picture Palace — cast your verdict before the final reel.</div>
+          <div style="width:54px;height:1px;background:linear-gradient(90deg,transparent,#c9a24b,transparent);margin:18px auto 0;"></div>
+        </div>
+
+        <!-- form fields -->
+        <div style="padding:6px 22px 26px;display:flex;flex-direction:column;gap:20px;">
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">My Name</label>
+            <input type="text" value="{{ name }}" onChange="{{ onName }}" placeholder="The name on your dressing-room door" style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);" />
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">I Think the Murderer Is</label>
+            <div style="position:relative;">
+              <select value="{{ murderer }}" onChange="{{ onMurderer }}" style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 38px 13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;cursor:pointer;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);">
+                <option value="" disabled="disabled">— Name your suspect —</option>
+                <sc-for list="{{ suspectList }}" as="s" hint-placeholder-count="5">
+                  <option value="{{ s }}">{{ s }}</option>
+                </sc-for>
+              </select>
+              <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:12px;pointer-events:none;">▼</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">Because…</label>
+            <textarea value="{{ because }}" onChange="{{ onBecause }}" rows="3" placeholder="Lay out the evidence, detective." style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;resize:vertical;line-height:1.5;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);"></textarea>
+          </div>
+
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,75,.35),transparent);margin:2px 0;"></div>
+
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;">
+              <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9a24b;">Best Dressed</label>
+              <div style="position:relative;">
+                <select value="{{ bestDressed }}" onChange="{{ onDressed }}" style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 32px 13px 13px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:15px;outline:none;cursor:pointer;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);">
+                  <option value="" disabled="disabled">— Vote —</option>
+                  <sc-for list="{{ attendeeList }}" as="a" hint-placeholder-count="5">
+                    <option value="{{ a }}">{{ a }}</option>
+                  </sc-for>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:11px;pointer-events:none;">▼</span>
+              </div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;">
+              <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9a24b;">Best Actor</label>
+              <div style="position:relative;">
+                <select value="{{ bestActor }}" onChange="{{ onActor }}" style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 32px 13px 13px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:15px;outline:none;cursor:pointer;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);">
+                  <option value="" disabled="disabled">— Vote —</option>
+                  <sc-for list="{{ attendeeList }}" as="a" hint-placeholder-count="5">
+                    <option value="{{ a }}">{{ a }}</option>
+                  </sc-for>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:11px;pointer-events:none;">▼</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">My Wealth</label>
+            <div style="position:relative;">
+              <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#c9a24b;font-family:'Cinzel',serif;font-size:17px;pointer-events:none;">$</span>
+              <input type="text" inputmode="numeric" value="{{ wealth }}" onChange="{{ onWealth }}" placeholder="Your fortune in the story" style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px 13px 30px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;" style-focus="border:1px solid #c9a24b;box-shadow:0 0 0 3px rgba(201,162,75,.16);" />
+            </div>
+          </div>
+
+          <sc-if value="{{ error }}" hint-placeholder-val="">
+            <div style="color:#f0b6b6;font-size:14px;font-style:italic;text-align:center;margin-top:-4px;">{{ error }}</div>
+          </sc-if>
+
+          <button onClick="{{ submit }}" style="margin-top:4px;width:100%;border:none;cursor:pointer;border-radius:6px;padding:16px;font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:#2a0810;background:linear-gradient(180deg,#f0d894,#d9b454 55%,#bd9438);box-shadow:0 8px 22px -8px rgba(201,162,75,.7),inset 0 1px 0 rgba(255,255,255,.45);" style-hover="background:linear-gradient(180deg,#f6e2a8,#e0bd5e 55%,#c79c3c);" style-active="transform:translateY(1px);">Seal My Verdict</button>
+
+          <div style="text-align:center;margin-top:2px;">
+            <span onClick="{{ openHost }}" style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:rgba(201,162,75,.65);cursor:pointer;letter-spacing:.04em;" style-hover="color:#c9a24b;">Host access ›</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ CONFIRMATION VIEW ============ -->
+    <sc-if value="{{ isDone }}" hint-placeholder-val="">
+    <div style="border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.85),rgba(201,162,75,.25),rgba(201,162,75,.7));box-shadow:0 24px 60px -18px rgba(0,0,0,.7);">
+      <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12,#240810);padding:48px 28px 42px;text-align:center;">
+        <div style="width:96px;height:96px;margin:0 auto 26px;border-radius:50%;background:radial-gradient(circle at 38% 32%, #f4e0a4, #d4af37 50%, #a87f2a);display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(201,162,75,.5),inset 0 2px 6px rgba(255,255,255,.4);animation:sealPop .55s cubic-bezier(.34,1.56,.64,1) both;">
+          <span style="font-size:46px;color:#2a0810;line-height:1;">★</span>
+        </div>
+        <h2 style="font-family:'Cinzel',serif;font-weight:700;font-size:30px;margin:0 0 14px;color:#e9cf8a;letter-spacing:.03em;">Verdict Sealed</h2>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;color:#e7d9b8;line-height:1.5;margin:0 auto 30px;max-width:300px;">Thank you, {{ doneName }}. Your accusation is locked in the vault until the big reveal.</p>
+        <button onClick="{{ another }}" style="border:1px solid #c9a24b;cursor:pointer;border-radius:6px;padding:13px 26px;font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#e9cf8a;background:rgba(201,162,75,.1);" style-hover="background:rgba(201,162,75,.2);">Cast Another Verdict</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ HOST VIEW ============ -->
+    <sc-if value="{{ isHost }}" hint-placeholder-val="">
+    <div style="border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.7),rgba(201,162,75,.2),rgba(201,162,75,.6));box-shadow:0 24px 60px -18px rgba(0,0,0,.7);">
+      <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12,#240810);padding:24px 20px 26px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">
+          <h2 style="font-family:'Cinzel',serif;font-weight:700;font-size:22px;margin:0;color:#e9cf8a;">The Verdicts</h2>
+          <span style="font-family:'EB Garamond',serif;font-size:14px;color:#c9a24b;">{{ count }} collected</span>
+        </div>
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,75,.35),transparent);margin:0 0 18px;"></div>
+
+        <sc-if value="{{ hasNone }}" hint-placeholder-val="">
+          <div style="text-align:center;color:rgba(243,233,210,.5);font-style:italic;font-size:15px;padding:30px 0;">No verdicts cast yet.</div>
+        </sc-if>
+
+        <!-- RESULTS / TALLY -->
+        <sc-if value="{{ hasResults }}" hint-placeholder-val="">
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px;">
+
+          <!-- the reveal -->
+          <div style="border:1px solid rgba(201,162,75,.45);border-radius:6px;padding:16px 15px;background:radial-gradient(ellipse 130% 110% at 50% 0%, rgba(201,162,75,.16), rgba(0,0,0,.25));text-align:center;">
+            <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#c9a24b;margin-bottom:7px;">The Real Murderer</div>
+            <div style="font-family:'Cinzel',serif;font-weight:700;font-size:20px;color:#e9cf8a;text-shadow:0 2px 12px rgba(201,162,75,.3);">{{ correctMurderer }}</div>
+            <div style="font-family:'EB Garamond',serif;font-size:14px;color:#e7d9b8;margin-top:7px;">{{ correctCount }} of {{ count }} detectives guessed correctly</div>
+            <sc-if value="{{ hasCorrect }}" hint-placeholder-val="">
+              <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:12px;">
+                <sc-for list="{{ correctGuessers }}" as="g" hint-placeholder-count="0">
+                  <span style="font-family:'EB Garamond',serif;font-weight:500;font-size:13px;color:#2a0810;background:linear-gradient(180deg,#f0d894,#d9b454);border-radius:20px;padding:3px 12px;">✓ {{ g.name }}</span>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+
+          <!-- best dressed -->
+          <div style="border:1px solid rgba(201,162,75,.22);border-radius:6px;padding:13px 15px;background:rgba(0,0,0,.2);">
+            <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c9a24b;margin-bottom:8px;">Best Dressed — Top 3</div>
+            <sc-for list="{{ dressedTop }}" as="r" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:11px;padding:4px 0;">
+                <span style="flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:12px;color:#2a0810;background:linear-gradient(180deg,#f0d894,#cfa645);">{{ r.rank }}</span>
+                <span style="flex:1;font-family:'EB Garamond',serif;font-size:15px;color:#f3e9d2;min-width:0;">{{ r.name }}</span>
+                <span style="font-family:'EB Garamond',serif;font-size:13px;color:#c9a24b;white-space:nowrap;">{{ r.value }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ dressedEmpty }}" hint-placeholder-val=""><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:rgba(243,233,210,.5);">No votes yet.</div></sc-if>
+          </div>
+
+          <!-- best actor -->
+          <div style="border:1px solid rgba(201,162,75,.22);border-radius:6px;padding:13px 15px;background:rgba(0,0,0,.2);">
+            <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c9a24b;margin-bottom:8px;">Best Actor — Top 3</div>
+            <sc-for list="{{ actorTop }}" as="r" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:11px;padding:4px 0;">
+                <span style="flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:12px;color:#2a0810;background:linear-gradient(180deg,#f0d894,#cfa645);">{{ r.rank }}</span>
+                <span style="flex:1;font-family:'EB Garamond',serif;font-size:15px;color:#f3e9d2;min-width:0;">{{ r.name }}</span>
+                <span style="font-family:'EB Garamond',serif;font-size:13px;color:#c9a24b;white-space:nowrap;">{{ r.value }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ actorEmpty }}" hint-placeholder-val=""><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:rgba(243,233,210,.5);">No votes yet.</div></sc-if>
+          </div>
+
+          <!-- richest -->
+          <div style="border:1px solid rgba(201,162,75,.22);border-radius:6px;padding:13px 15px;background:rgba(0,0,0,.2);">
+            <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c9a24b;margin-bottom:8px;">Most Wealth — Top 3</div>
+            <sc-for list="{{ richTop }}" as="r" hint-placeholder-count="0">
+              <div style="display:flex;align-items:center;gap:11px;padding:4px 0;">
+                <span style="flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;font-size:12px;color:#2a0810;background:linear-gradient(180deg,#f0d894,#cfa645);">{{ r.rank }}</span>
+                <span style="flex:1;font-family:'EB Garamond',serif;font-size:15px;color:#f3e9d2;min-width:0;">{{ r.name }}</span>
+                <span style="font-family:'EB Garamond',serif;font-size:14px;font-weight:600;color:#e9cf8a;white-space:nowrap;">{{ r.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,75,.3),transparent);margin:4px 0 0;"></div>
+          <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c9a24b;text-align:center;">All Verdicts</div>
+        </div>
+        </sc-if>
+
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ submissionsView }}" as="row" hint-placeholder-count="0">
+            <div style="border:1px solid rgba(201,162,75,.25);border-radius:6px;padding:14px 15px;background:rgba(0,0,0,.2);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px;">
+                <span style="font-family:'Cinzel',serif;font-weight:600;font-size:15px;color:#e9cf8a;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">{{ row.name }}<sc-if value="{{ row.isCorrect }}" hint-placeholder-val=""><span style="font-family:'EB Garamond',serif;font-weight:500;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#2a0810;background:linear-gradient(180deg,#f0d894,#d9b454);border-radius:20px;padding:2px 9px;">✓ Correct</span></sc-if></span>
+                <span style="font-family:'EB Garamond',serif;font-size:13px;color:#c9a24b;">${{ row.wealth }}</span>
+              </div>
+              <div style="font-family:'EB Garamond',serif;font-size:15px;color:#f3e9d2;line-height:1.5;">
+                <span style="color:#c9a24b;">Accuses:</span> {{ row.murderer }}
+              </div>
+              <sc-if value="{{ row.because }}" hint-placeholder-val="">
+                <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:rgba(243,233,210,.78);line-height:1.45;margin-top:4px;">“{{ row.because }}”</div>
+              </sc-if>
+              <div style="font-family:'EB Garamond',serif;font-size:13px;color:rgba(243,233,210,.7);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;">
+                <span><span style="color:#c9a24b;">Dressed:</span> {{ row.bestDressed }}</span>
+                <span><span style="color:#c9a24b;">Actor:</span> {{ row.bestActor }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:20px;">
+          <button onClick="{{ backToForm }}" style="flex:1;border:1px solid rgba(201,162,75,.4);cursor:pointer;border-radius:6px;padding:11px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e9cf8a;background:rgba(201,162,75,.08);" style-hover="background:rgba(201,162,75,.18);">‹ Back</button>
+          <button onClick="{{ exportJSON }}" style="flex:1;border:1px solid rgba(201,162,75,.4);cursor:pointer;border-radius:6px;padding:11px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e9cf8a;background:rgba(201,162,75,.08);" style-hover="background:rgba(201,162,75,.18);">{{ copyLabel }}</button>
+          <button onClick="{{ clearAll }}" style="flex:0 0 auto;border:1px solid rgba(176,80,80,.5);cursor:pointer;border-radius:6px;padding:11px 14px;font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e7b0b0;background:rgba(120,30,30,.18);" style-hover="background:rgba(150,40,40,.3);">Clear</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:440,&quot;height&quot;:880},&quot;suspects&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Vanity Affair (Michael), Hobart Hughes (Ilyar), Penelope Hughes (Anita), Hunter Starr (Giuliano), Angel Wood (Emma), J.J. Scoop (Evelyn), Ward Winner (Daniel S), M.C. Award (Daniel M), Mario Talent (Marc), Lola Talent (Sabrina), Steffi Wood (Jeremy), Jada Broken (Michelle), Barbie Doll (Avin), Natasha Gibson (Dena), Avery Scout (Marissa), Dana Darling (Joyce), Princess Pop (Nicole), Brady Comeback (Alex), T. Redd (Sabs), Bobby Calling (Courtney)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;attendees&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Vanity Affair (Michael), Hobart Hughes (Ilyar), Penelope Hughes (Anita), Hunter Starr (Giuliano), Angel Wood (Emma), J.J. Scoop (Evelyn), Ward Winner (Daniel S), M.C. Award (Daniel M), Mario Talent (Marc), Lola Talent (Sabrina), Steffi Wood (Jeremy), Jada Broken (Michelle), Barbie Doll (Avin), Natasha Gibson (Dena), Avery Scout (Marissa), Dana Darling (Joyce), Princess Pop (Nicole), Brady Comeback (Alex), T. Redd (Sabs), Bobby Calling (Courtney), Mel O'Dee (Marcus), Rex Ballot (Rocky), Page Turner (Austin), Nova Sparks (Nour), Crystal Lux (Niki), Cameo Belle (Regina), Pearl Scene (Karen), Scarlett Scene (Lian), Duke Sterling (Cristian), Len Zoom (Jamoy), Flash Bulb (Brian), Max Action (Tichi), Phil Deal (Andrew L), Scoop Daily (Andrew N), Penny Press (Laura), Dixie Dish (Kiera)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;correctMurderer&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Brady Comeback (Alex)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;requireReason&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'form',
+    form: { name: '', murderer: '', because: '', bestDressed: '', bestActor: '', wealth: '' },
+    submissions: [],
+    error: '',
+    copyLabel: 'Copy All',
+    doneName: ''
+  };
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('mm_verdicts');
+      if (raw) this.setState({ submissions: JSON.parse(raw) });
+    } catch (e) {}
+  }
+
+  parseList(val, fallback) {
+    const src = (val == null ? fallback : val) || '';
+    return src.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  setField(key, value) {
+    this.setState(s => ({ form: { ...s.form, [key]: value }, error: '' }));
+  }
+
+  submit = () => {
+    const f = this.state.form;
+    const requireReason = this.props.requireReason !== false;
+    if (!f.name.trim()) { this.setState({ error: 'A detective must sign their name.' }); return; }
+    if (!f.murderer) { this.setState({ error: 'You must name a suspect.' }); return; }
+    if (requireReason && !f.because.trim()) { this.setState({ error: 'State your evidence in the “Because” field.' }); return; }
+
+    const entry = { ...f, name: f.name.trim(), because: f.because.trim(), wealth: f.wealth.trim() || '0', submittedAt: new Date().toISOString() };
+    const next = [entry, ...this.state.submissions];
+    try { localStorage.setItem('mm_verdicts', JSON.stringify(next)); } catch (e) {}
+
+    // Hook for wiring to a backend later:
+    if (typeof window !== 'undefined' && typeof window.onVerdictSubmit === 'function') {
+      try { window.onVerdictSubmit(entry); } catch (e) {}
+    }
+
+    this.setState({
+      submissions: next,
+      doneName: entry.name,
+      view: 'done',
+      error: '',
+      form: { name: '', murderer: '', because: '', bestDressed: '', bestActor: '', wealth: '' }
+    });
+  };
+
+  another = () => this.setState({ view: 'form' });
+  openHost = () => this.setState({ view: 'host' });
+  backToForm = () => this.setState({ view: 'form' });
+
+  exportJSON = () => {
+    const text = JSON.stringify(this.state.submissions, null, 2);
+    try {
+      navigator.clipboard.writeText(text);
+      this.setState({ copyLabel: 'Copied!' });
+      setTimeout(() => this.setState({ copyLabel: 'Copy All' }), 1800);
+    } catch (e) {
+      this.setState({ copyLabel: 'Copy failed' });
+    }
+  };
+
+  clearAll = () => {
+    if (typeof window !== 'undefined' && window.confirm && !window.confirm('Erase all collected verdicts? This cannot be undone.')) return;
+    try { localStorage.removeItem('mm_verdicts'); } catch (e) {}
+    this.setState({ submissions: [] });
+  };
+
+  renderVals() {
+    const f = this.state.form;
+    const defSuspects = "Vanity Affair (Michael), Hobart Hughes (Ilyar), Penelope Hughes (Anita), Hunter Starr (Giuliano), Angel Wood (Emma), J.J. Scoop (Evelyn), Ward Winner (Daniel S), M.C. Award (Daniel M), Mario Talent (Marc), Lola Talent (Sabrina), Steffi Wood (Jeremy), Jada Broken (Michelle), Barbie Doll (Avin), Natasha Gibson (Dena), Avery Scout (Marissa), Dana Darling (Joyce), Princess Pop (Nicole), Brady Comeback (Alex), T. Redd (Sabs), Bobby Calling (Courtney)";
+    const defAttendees = defSuspects + ", Mel O'Dee (Marcus), Rex Ballot (Rocky), Page Turner (Austin), Nova Sparks (Nour), Crystal Lux (Niki), Cameo Belle (Regina), Pearl Scene (Karen), Scarlett Scene (Lian), Duke Sterling (Cristian), Len Zoom (Jamoy), Flash Bulb (Brian), Max Action (Tichi), Phil Deal (Andrew L), Scoop Daily (Andrew N), Penny Press (Laura), Dixie Dish (Kiera)";
+
+    const subs = this.state.submissions;
+    const norm = (v) => (v || '').trim();
+    const correctMurderer = norm(this.props.correctMurderer) || 'Brady Comeback (Alex)';
+    const submissionsView = subs.map(s => ({ ...s, isCorrect: norm(s.murderer) === correctMurderer }));
+    const correctGuessers = submissionsView.filter(s => s.isCorrect).map(s => ({ name: s.name }));
+
+    const tally = (key) => {
+      const m = {};
+      subs.forEach(s => { const v = norm(s[key]); if (v) m[v] = (m[v] || 0) + 1; });
+      return Object.keys(m).map(k => ({ name: k, votes: m[k] }))
+        .sort((a, b) => b.votes - a.votes).slice(0, 3)
+        .map((x, i) => ({ rank: i + 1, name: x.name, value: x.votes + (x.votes === 1 ? ' vote' : ' votes') }));
+    };
+    const dressedTop = tally('bestDressed');
+    const actorTop = tally('bestActor');
+
+    const money = (w) => { const n = parseFloat(String(w).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; };
+    const richTop = subs.map(s => ({ name: s.name, amt: money(s.wealth) }))
+      .sort((a, b) => b.amt - a.amt).slice(0, 3)
+      .map((x, i) => ({ rank: i + 1, name: x.name, value: '$' + x.amt.toLocaleString() }));
+
+    return {
+      submissionsView,
+      correctMurderer,
+      correctCount: correctGuessers.length,
+      hasCorrect: correctGuessers.length > 0,
+      correctGuessers,
+      hasResults: subs.length > 0,
+      dressedTop, actorTop, richTop,
+      dressedEmpty: dressedTop.length === 0,
+      actorEmpty: actorTop.length === 0,
+      isForm: this.state.view === 'form',
+      isDone: this.state.view === 'done',
+      isHost: this.state.view === 'host',
+
+      name: f.name, murderer: f.murderer, because: f.because,
+      bestDressed: f.bestDressed, bestActor: f.bestActor, wealth: f.wealth,
+      error: this.state.error,
+      doneName: this.state.doneName,
+
+      suspectList: this.parseList(this.props.suspects, defSuspects),
+      attendeeList: this.parseList(this.props.attendees, defAttendees),
+      bulbs: Array.from({ length: 9 }, (_, i) => i),
+
+      submissions: this.state.submissions,
+      count: this.state.submissions.length,
+      hasNone: this.state.submissions.length === 0,
+      copyLabel: this.state.copyLabel,
+
+      onName: (e) => this.setField('name', e.target.value),
+      onMurderer: (e) => this.setField('murderer', e.target.value),
+      onBecause: (e) => this.setField('because', e.target.value),
+      onDressed: (e) => this.setField('bestDressed', e.target.value),
+      onActor: (e) => this.setField('bestActor', e.target.value),
+      onWealth: (e) => this.setField('wealth', e.target.value.replace(/[^0-9.,]/g, '')),
+
+      submit: this.submit,
+      another: this.another,
+      openHost: this.openHost,
+      backToForm: this.backToForm,
+      exportJSON: this.exportJSON,
+      clearAll: this.clearAll
+    };
+  }
+}
+</script>
+</body>
+</html>
