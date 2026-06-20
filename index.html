@@ -271,12 +271,7 @@ document.getElementById('btn-submit').addEventListener('click', () => {
   try { localStorage.setItem('mm_verdicts', JSON.stringify(submissions)); } catch (e) {}
 
   if (SCRIPT_URL) {
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(entry)
-    }).catch(() => {});
+    fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(entry))).catch(() => {});
   }
 
   if (typeof window.onVerdictSubmit === 'function') {

@@ -1,74 +1,71 @@
 // ════════════════════════════════════════════════════════════
 //  Who Dunnit? — Google Apps Script Backend
 //
-//  Setup:
-//  1. Open your Google Sheet
-//  2. Click Extensions > Apps Script
-//  3. Paste this entire file, replacing any existing code
-//  4. Click Deploy > New deployment
-//     - Type: Web app
-//     - Execute as: Me
-//     - Who has access: Anyone
-//  5. Click Deploy, copy the Web app URL
-//  6. Paste that URL into SCRIPT_URL in index.html and host.html
+//  Setup / Update:
+//  1. Paste this into Extensions > Apps Script (replace all)
+//  2. Click Deploy > Manage deployments
+//  3. Click the pencil icon on your existing deployment
+//  4. Set Version to "New version" → click Deploy
+//  (URL stays the same — no need to update the HTML files)
 // ════════════════════════════════════════════════════════════
 
 const SHEET_NAME = 'Verdicts';
 
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
-    let sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+function doGet(e) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const param = (e && e.parameter) || {};
 
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(['submittedAt', 'name', 'murderer', 'because', 'bestDressed', 'bestActor', 'wealth']);
+  try {
+
+    // ── Save a new submission ──────────────────────────────
+    if (param.data) {
+      const data = JSON.parse(param.data);
+      let sheet = ss.getSheetByName(SHEET_NAME);
+      if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+      if (sheet.getLastRow() === 0) {
+        sheet.appendRow(['submittedAt','name','murderer','because','bestDressed','bestActor','wealth']);
+      }
+      sheet.appendRow([
+        data.submittedAt || new Date().toISOString(),
+        data.name        || '',
+        data.murderer    || '',
+        data.because     || '',
+        data.bestDressed || '',
+        data.bestActor   || '',
+        data.wealth      || ''
+      ]);
+      return out({ ok: true });
     }
 
-    sheet.appendRow([
-      data.submittedAt || new Date().toISOString(),
-      data.name        || '',
-      data.murderer    || '',
-      data.because     || '',
-      data.bestDressed || '',
-      data.bestActor   || '',
-      data.wealth      || ''
-    ]);
-  } catch (err) {}
+    // ── Clear all verdicts ─────────────────────────────────
+    if (param.action === 'clear') {
+      const sheet = ss.getSheetByName(SHEET_NAME);
+      if (sheet) sheet.clearContents();
+      return out({ ok: true });
+    }
 
-  return ContentService
-    .createTextOutput(JSON.stringify({ ok: true }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doGet() {
-  try {
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    // ── Read all verdicts ──────────────────────────────────
     const sheet = ss.getSheetByName(SHEET_NAME);
-
-    if (!sheet || sheet.getLastRow() <= 1) {
-      return ContentService
-        .createTextOutput(JSON.stringify([]))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
+    if (!sheet || sheet.getLastRow() <= 1) return out([]);
     const rows = sheet.getDataRange().getValues();
     const headers = rows[0];
-    const data = rows.slice(1).map(row => {
+    const records = rows.slice(1).map(row => {
       const obj = {};
       headers.forEach((h, i) => { obj[String(h)] = row[i]; });
       return obj;
     });
+    records.reverse(); // newest first
+    return out(records);
 
-    data.reverse(); // newest first
-
-    return ContentService
-      .createTextOutput(JSON.stringify(data))
-      .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify([]))
-      .setMimeType(ContentService.MimeType.JSON);
+    return out({ error: String(err) });
   }
 }
+
+function out(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) { return out({ ok: true }); }

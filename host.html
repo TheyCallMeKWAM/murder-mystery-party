@@ -374,9 +374,12 @@ function copyAll() {
 }
 
 function clearAll() {
-  const target = SCRIPT_URL ? 'Google Sheet and local cache' : 'local storage';
+  const target = SCRIPT_URL ? 'Google Sheet and local storage' : 'local storage';
   if (!confirm(`Clear all verdicts from ${target}? This cannot be undone.`)) return;
   try { localStorage.removeItem('mm_verdicts'); } catch (e) {}
+  if (SCRIPT_URL) {
+    fetch(SCRIPT_URL + '?action=clear').catch(() => {});
+  }
   render([]);
 }
 
