@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Dunnit? — A Murder at the Picture Palace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100vh; }
+body { background: #25070d; }
+
+@keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes sealPop { 0% { transform: scale(.4) rotate(-12deg); opacity: 0; } 60% { transform: scale(1.08) rotate(3deg); opacity: 1; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+
+input::placeholder, textarea::placeholder { color: rgba(243,233,210,.32); font-style: italic; }
+select option { background: #2a0a11; color: #f3e9d2; }
+
+.fi:focus {
+  border-color: #c9a24b !important;
+  box-shadow: 0 0 0 3px rgba(201,162,75,.16) !important;
+  outline: none;
+}
+
+.btn-gold {
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 16px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #2a0810;
+  background: linear-gradient(180deg,#f0d894,#d9b454 55%,#bd9438);
+  box-shadow: 0 8px 22px -8px rgba(201,162,75,.7), inset 0 1px 0 rgba(255,255,255,.45);
+  transition: background .15s;
+}
+.btn-gold:hover { background: linear-gradient(180deg,#f6e2a8,#e0bd5e 55%,#c79c3c); }
+.btn-gold:active { transform: translateY(1px); }
+
+.bulbs {
+  display: flex;
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 18px;
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+.bulb {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4d2, #e6c878 45%, #b88a2e);
+  box-shadow: 0 0 7px 1px rgba(230,200,120,.7);
+  display: block;
+  flex-shrink: 0;
+}
+
+.seal-anim { animation: sealPop .55s cubic-bezier(.34,1.56,.64,1) both; }
+</style>
+</head>
+<body>
+<div style="min-height:100vh;width:100%;padding:28px 16px 48px;background:radial-gradient(ellipse 120% 80% at 50% -10%, #6a1822 0%, #43101a 42%, #2a080f 78%, #1f0509 100%);font-family:'EB Garamond',Georgia,serif;display:flex;justify-content:center;align-items:flex-start;">
+<div style="width:100%;max-width:460px;">
+
+  <!-- ============ FORM VIEW ============ -->
+  <div id="view-form">
+    <div style="position:relative;border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.85),rgba(201,162,75,.25) 30%,rgba(201,162,75,.18) 70%,rgba(201,162,75,.7));box-shadow:0 24px 60px -18px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);">
+      <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12 0%,#240810 100%);overflow:hidden;">
+
+        <!-- Marquee header -->
+        <div style="padding:22px 22px 24px;text-align:center;background:radial-gradient(ellipse 100% 140% at 50% 0%, rgba(201,162,75,.12), transparent 70%);">
+          <div class="bulbs" id="bulbs-row"></div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:6px;">Now Showing</div>
+          <h1 style="font-family:'Cinzel',serif;font-weight:700;font-size:38px;line-height:1;margin:0;color:#e9cf8a;text-shadow:0 2px 14px rgba(201,162,75,.35);letter-spacing:.02em;">Who Dunnit?</h1>
+          <div style="font-family:'EB Garamond',serif;font-size:16px;color:#e7d9b8;margin-top:12px;max-width:300px;margin-left:auto;margin-right:auto;line-height:1.45;">A Murder at the Picture Palace — cast your verdict before the final reel.</div>
+          <div style="width:54px;height:1px;background:linear-gradient(90deg,transparent,#c9a24b,transparent);margin:18px auto 0;"></div>
+        </div>
+
+        <!-- Form fields -->
+        <div style="padding:6px 22px 26px;display:flex;flex-direction:column;gap:20px;">
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">My Name</label>
+            <input id="f-name" class="fi" type="text" placeholder="The name on your dressing-room door"
+              style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;" />
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">I Think the Murderer Is</label>
+            <div style="position:relative;">
+              <select id="f-murderer" class="fi"
+                style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 38px 13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;cursor:pointer;">
+                <option value="" disabled selected>— Name your suspect —</option>
+              </select>
+              <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:12px;pointer-events:none;">▼</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">Because…</label>
+            <textarea id="f-because" class="fi" rows="3" placeholder="Lay out the evidence, detective."
+              style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;resize:vertical;line-height:1.5;"></textarea>
+          </div>
+
+          <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,162,75,.35),transparent);margin:2px 0;"></div>
+
+          <div style="display:flex;gap:14px;">
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;">
+              <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9a24b;">Best Dressed</label>
+              <div style="position:relative;">
+                <select id="f-dressed" class="fi"
+                  style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 32px 13px 13px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:15px;outline:none;cursor:pointer;">
+                  <option value="" disabled selected>— Vote —</option>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:11px;pointer-events:none;">▼</span>
+              </div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;">
+              <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#c9a24b;">Best Actor</label>
+              <div style="position:relative;">
+                <select id="f-actor" class="fi"
+                  style="width:100%;appearance:none;-webkit-appearance:none;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 32px 13px 13px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:15px;outline:none;cursor:pointer;">
+                  <option value="" disabled selected>— Vote —</option>
+                </select>
+                <span style="position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#c9a24b;font-size:11px;pointer-events:none;">▼</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#c9a24b;">My Wealth</label>
+            <div style="position:relative;">
+              <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#c9a24b;font-family:'Cinzel',serif;font-size:17px;pointer-events:none;">$</span>
+              <input id="f-wealth" class="fi" type="text" inputmode="numeric" placeholder="Your fortune in the story"
+                style="width:100%;background:rgba(0,0,0,.28);border:1px solid rgba(201,162,75,.32);border-radius:5px;padding:13px 14px 13px 30px;color:#f3e9d2;font-family:'EB Garamond',serif;font-size:16px;outline:none;" />
+            </div>
+          </div>
+
+          <div id="f-error" style="color:#f0b6b6;font-size:14px;font-style:italic;text-align:center;margin-top:-4px;display:none;"></div>
+
+          <button id="btn-submit" class="btn-gold" style="margin-top:4px;width:100%;">Seal My Verdict</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CONFIRMATION VIEW ============ -->
+  <div id="view-done" style="display:none;">
+    <div style="border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.85),rgba(201,162,75,.25),rgba(201,162,75,.7));box-shadow:0 24px 60px -18px rgba(0,0,0,.7);">
+      <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12,#240810);padding:48px 28px 52px;text-align:center;">
+        <div id="seal-icon" class="seal-anim" style="width:96px;height:96px;margin:0 auto 26px;border-radius:50%;background:radial-gradient(circle at 38% 32%, #f4e0a4, #d4af37 50%, #a87f2a);display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(201,162,75,.5),inset 0 2px 6px rgba(255,255,255,.4);">
+          <span style="font-size:46px;color:#2a0810;line-height:1;">★</span>
+        </div>
+        <h2 style="font-family:'Cinzel',serif;font-weight:700;font-size:30px;margin:0 0 14px;color:#e9cf8a;letter-spacing:.03em;">Verdict Sealed</h2>
+        <p style="font-family:'EB Garamond',serif;font-size:17px;color:#e7d9b8;line-height:1.5;margin:0 auto;max-width:300px;">Thank you, <span id="done-name" style="font-weight:600;"></span>. Your accusation is locked in the vault until the big reveal.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── Paste your Apps Script Web App URL here after deploying ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3XNDjinVLsE-ZOAMnHvEklHaPqXzv239LLZJUTerVGMppdR54w46PTxteQVy9FSbn/exec';
+
+const SUSPECTS = [
+  'Vanity Affair (Michael)',
+  'Hobart Hughes (Ilyar)',
+  'Penelope Hughes (Anita)',
+  'Hunter Starr (Giuliano)',
+  'Angel Wood (Emma)',
+  'J.J. Scoop (Evelyn)',
+  'Ward Winner (Daniel S)',
+  'M.C. Award (Daniel M)',
+  'Mario Talent (Marc)',
+  'Lola Talent (Sabrina)',
+  'Steffi Wood (Jeremy)',
+  'Jada Broken (Michelle)',
+  'Barbie Doll (Avin)',
+  'Natasha Gibson (Dena)',
+  'Avery Scout (Marissa)',
+  'Dana Darling (Joyce)',
+  'Princess Pop (Nicole)',
+  'Brady Comeback (Alex)',
+  'T. Redd (Sabs)',
+  'Bobby Calling (Courtney)'
+];
+
+const ATTENDEES = [
+  ...SUSPECTS,
+  "Mel O'Dee (Marcus)",
+  'Rex Ballot (Rocky)',
+  'Page Turner (Austin)',
+  'Nova Sparks (Nour)',
+  'Crystal Lux (Niki)',
+  'Cameo Belle (Regina)',
+  'Pearl Scene (Karen)',
+  'Scarlett Scene (Lian)',
+  'Duke Sterling (Cristian)',
+  'Len Zoom (Jamoy)',
+  'Flash Bulb (Brian)',
+  'Max Action (Tichi)',
+  'Phil Deal (Andrew L)',
+  'Scoop Daily (Andrew N)',
+  'Penny Press (Laura)',
+  'Dixie Dish (Kiera)'
+];
+
+// Marquee bulbs
+const bulbsRow = document.getElementById('bulbs-row');
+for (let i = 0; i < 9; i++) {
+  const b = document.createElement('span');
+  b.className = 'bulb';
+  bulbsRow.appendChild(b);
+}
+
+// Populate dropdowns
+function addOptions(selectId, items) {
+  const sel = document.getElementById(selectId);
+  items.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    sel.appendChild(opt);
+  });
+}
+addOptions('f-murderer', SUSPECTS);
+addOptions('f-dressed', ATTENDEES);
+addOptions('f-actor', ATTENDEES);
+
+function clearError() {
+  document.getElementById('f-error').style.display = 'none';
+}
+
+['f-name', 'f-murderer', 'f-because', 'f-dressed', 'f-actor', 'f-wealth'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', clearError);
+  el.addEventListener('change', clearError);
+});
+
+document.getElementById('f-wealth').addEventListener('input', function () {
+  this.value = this.value.replace(/[^0-9.,]/g, '');
+});
+
+document.getElementById('btn-submit').addEventListener('click', () => {
+  const name     = document.getElementById('f-name').value.trim();
+  const murderer = document.getElementById('f-murderer').value;
+  const because  = document.getElementById('f-because').value.trim();
+  const bestDressed = document.getElementById('f-dressed').value;
+  const bestActor   = document.getElementById('f-actor').value;
+  const wealth   = document.getElementById('f-wealth').value.replace(/[^0-9.,]/g, '').trim() || '0';
+
+  const errEl = document.getElementById('f-error');
+  const showErr = msg => { errEl.textContent = msg; errEl.style.display = 'block'; };
+
+  if (!name)     { showErr('A detective must sign their name.'); return; }
+  if (!murderer) { showErr('You must name a suspect.'); return; }
+  if (!because)  { showErr('State your evidence in the "Because" field.'); return; }
+
+  const entry = { name, murderer, because, bestDressed, bestActor, wealth, submittedAt: new Date().toISOString() };
+
+  let submissions = [];
+  try { submissions = JSON.parse(localStorage.getItem('mm_verdicts') || '[]'); } catch (e) {}
+  submissions = [entry, ...submissions];
+  try { localStorage.setItem('mm_verdicts', JSON.stringify(submissions)); } catch (e) {}
+
+  if (SCRIPT_URL) {
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(entry)
+    }).catch(() => {});
+  }
+
+  if (typeof window.onVerdictSubmit === 'function') {
+    try { window.onVerdictSubmit(entry); } catch (e) {}
+  }
+
+  document.getElementById('done-name').textContent = name;
+  document.getElementById('view-form').style.display = 'none';
+  document.getElementById('view-done').style.display = '';
+  window.scrollTo(0, 0);
+});
+</script>
+</body>
+</html>

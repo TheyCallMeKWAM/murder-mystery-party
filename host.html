@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Host Panel — Who Dunnit?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; min-height: 100vh; }
+body { background: #25070d; }
+
+@keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+select option { background: #2a0a11; color: #f3e9d2; }
+
+.btn-gold {
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 11px 18px;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #2a0810;
+  background: linear-gradient(180deg,#f0d894,#d9b454 55%,#bd9438);
+  box-shadow: 0 6px 18px -6px rgba(201,162,75,.7), inset 0 1px 0 rgba(255,255,255,.45);
+  transition: background .15s;
+}
+.btn-gold:hover { background: linear-gradient(180deg,#f6e2a8,#e0bd5e 55%,#c79c3c); }
+.btn-gold:active { transform: translateY(1px); }
+
+.btn-ghost {
+  border: 1px solid rgba(201,162,75,.4);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #c9a24b;
+  background: transparent;
+  transition: background .15s, border-color .15s;
+}
+.btn-ghost:hover { background: rgba(201,162,75,.08); border-color: rgba(201,162,75,.65); }
+.btn-ghost:active { transform: translateY(1px); }
+
+.bulbs {
+  display: flex;
+  justify-content: center;
+  gap: 11px;
+  margin-bottom: 18px;
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+.bulb {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4d2, #e6c878 45%, #b88a2e);
+  box-shadow: 0 0 7px 1px rgba(230,200,120,.7);
+  display: block;
+  flex-shrink: 0;
+}
+
+.card {
+  border-radius: 8px;
+  padding: 18px 20px;
+  background: rgba(0,0,0,.28);
+  border: 1px solid rgba(201,162,75,.22);
+}
+
+.card-correct {
+  border-color: rgba(201,162,75,.65);
+  background: rgba(201,162,75,.07);
+}
+
+.badge-correct {
+  display: inline-block;
+  background: linear-gradient(135deg,#f0d894,#d9b454);
+  color: #2a0810;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 30px;
+  margin-left: 8px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.rank-1 { background: linear-gradient(135deg,#f0d894,#d4af37); color: #2a0810; box-shadow: 0 0 10px rgba(212,175,55,.5); }
+.rank-2 { background: linear-gradient(135deg,#d8d8d8,#a8a8a8); color: #1a1a1a; }
+.rank-3 { background: linear-gradient(135deg,#cd7f32,#8b5a2b); color: #fff8f0; }
+
+.name-chip {
+  display: inline-block;
+  background: rgba(201,162,75,.15);
+  border: 1px solid rgba(201,162,75,.35);
+  color: #e9cf8a;
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  margin: 3px 4px 3px 0;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,162,75,.35), transparent);
+  margin: 24px 0;
+}
+</style>
+</head>
+<body>
+<div style="min-height:100vh;width:100%;padding:28px 16px 60px;background:radial-gradient(ellipse 120% 80% at 50% -10%, #6a1822 0%, #43101a 42%, #2a080f 78%, #1f0509 100%);font-family:'EB Garamond',Georgia,serif;display:flex;justify-content:center;align-items:flex-start;">
+<div style="width:100%;max-width:520px;">
+
+  <!-- Header -->
+  <div style="text-align:center;margin-bottom:32px;">
+    <div class="bulbs" id="bulbs-row"></div>
+    <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:6px;">Backstage Access</div>
+    <h1 style="font-family:'Cinzel',serif;font-weight:700;font-size:32px;line-height:1;margin:0 0 10px;color:#e9cf8a;text-shadow:0 2px 14px rgba(201,162,75,.35);letter-spacing:.02em;">Host Panel</h1>
+    <div id="verdict-count" style="font-family:'EB Garamond',serif;font-size:16px;color:#e7d9b8;font-style:italic;"></div>
+    <div style="width:54px;height:1px;background:linear-gradient(90deg,transparent,#c9a24b,transparent);margin:16px auto 0;"></div>
+  </div>
+
+  <!-- Main panel -->
+  <div style="border-radius:10px;padding:2px;background:linear-gradient(180deg,rgba(201,162,75,.85),rgba(201,162,75,.25) 30%,rgba(201,162,75,.18) 70%,rgba(201,162,75,.7));box-shadow:0 24px 60px -18px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);">
+    <div style="border-radius:8px;background:linear-gradient(180deg,#2c0b12 0%,#1e0609 100%);padding:28px 22px 32px;">
+
+      <!-- ── MURDERER REVEAL ── -->
+      <div style="margin-bottom:28px;">
+        <div style="font-family:'Cinzel',serif;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:16px;">The Real Murderer</div>
+        <div style="border-radius:8px;padding:18px 20px;background:rgba(201,162,75,.08);border:1px solid rgba(201,162,75,.4);text-align:center;">
+          <div style="font-size:28px;line-height:1;margin-bottom:4px;">🎬</div>
+          <div style="font-family:'Cinzel',serif;font-weight:700;font-size:20px;color:#e9cf8a;margin-bottom:6px;" id="reveal-name"></div>
+          <div id="correct-count-line" style="font-family:'EB Garamond',serif;font-size:15px;color:#c9a24b;font-style:italic;margin-bottom:12px;"></div>
+          <div id="correct-chips" style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px;"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ── LEADERBOARDS ── -->
+      <div style="margin-bottom:28px;">
+        <div style="font-family:'Cinzel',serif;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:16px;">Awards &amp; Fortune</div>
+
+        <!-- Best Dressed -->
+        <div style="margin-bottom:18px;">
+          <div style="font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#e9cf8a;margin-bottom:10px;">✦ Best Dressed</div>
+          <div id="lb-dressed" class="card" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+
+        <!-- Best Actor -->
+        <div style="margin-bottom:18px;">
+          <div style="font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#e9cf8a;margin-bottom:10px;">✦ Best Actor</div>
+          <div id="lb-actor" class="card" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+
+        <!-- Most Wealth -->
+        <div>
+          <div style="font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#e9cf8a;margin-bottom:10px;">✦ Most Wealth</div>
+          <div id="lb-wealth" class="card" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ── SUBMISSION CARDS ── -->
+      <div style="margin-bottom:24px;">
+        <div style="font-family:'Cinzel',serif;font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#c9a24b;margin-bottom:16px;">All Verdicts</div>
+        <div id="submissions-list" style="display:flex;flex-direction:column;gap:14px;"></div>
+      </div>
+
+      <!-- ── ACTIONS ── -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button class="btn-gold" onclick="refresh()" style="flex:1;min-width:100px;">Refresh</button>
+        <button class="btn-gold" onclick="copyAll()" style="flex:1;min-width:100px;">Copy All</button>
+        <button class="btn-ghost" onclick="clearAll()" style="flex:1;min-width:100px;">Clear Data</button>
+      </div>
+
+      <div id="copy-feedback" style="text-align:center;font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#c9a24b;margin-top:12px;min-height:20px;"></div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ── Paste your Apps Script Web App URL here after deploying ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw3XNDjinVLsE-ZOAMnHvEklHaPqXzv239LLZJUTerVGMppdR54w46PTxteQVy9FSbn/exec';
+
+const CORRECT_MURDERER = 'Brady Comeback (Alex)';
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function norm(s) { return (s || '').trim(); }
+
+function parseMoney(w) {
+  const n = parseFloat(String(w).replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function formatMoney(n) {
+  return '$' + n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+
+function tally(subs, key) {
+  const map = {};
+  subs.forEach(s => {
+    const v = norm(s[key]);
+    if (v) map[v] = (map[v] || 0) + 1;
+  });
+  return Object.keys(map)
+    .map(k => ({ name: k, votes: map[k] }))
+    .sort((a, b) => b.votes - a.votes)
+    .slice(0, 3);
+}
+
+function rankRow(rank, name, value) {
+  return `<div style="display:flex;align-items:center;gap:12px;">
+    <div class="rank-badge rank-${rank}">${rank}</div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-family:'EB Garamond',serif;font-size:16px;color:#f3e9d2;line-height:1.3;">${esc(name)}</div>
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:#c9a24b;white-space:nowrap;">${esc(value)}</div>
+  </div>`;
+}
+
+function emptyState(msg) {
+  return `<div style="text-align:center;font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:rgba(243,233,210,.38);padding:8px 0;">${msg}</div>`;
+}
+
+function render(subs) {
+  const count = subs.length;
+
+  // Verdict count
+  document.getElementById('verdict-count').textContent =
+    count === 0 ? 'No verdicts cast yet.' :
+    count === 1 ? '1 verdict collected' :
+    `${count} verdicts collected`;
+
+  // Murderer reveal
+  document.getElementById('reveal-name').textContent = CORRECT_MURDERER;
+  const correct = subs.filter(s => norm(s.murderer) === CORRECT_MURDERER);
+  const cLine = document.getElementById('correct-count-line');
+  const cChips = document.getElementById('correct-chips');
+  if (count === 0) {
+    cLine.textContent = 'No guesses yet.';
+    cChips.innerHTML = '';
+  } else if (correct.length === 0) {
+    cLine.textContent = 'Nobody got it right — justice delayed!';
+    cChips.innerHTML = '';
+  } else {
+    cLine.textContent = `${correct.length} of ${count} detective${count === 1 ? '' : 's'} got it right`;
+    cChips.innerHTML = correct.map(s => `<span class="name-chip">${esc(norm(s.name) || 'Unknown')}</span>`).join('');
+  }
+
+  // Leaderboard: Best Dressed
+  const dressed = tally(subs, 'bestDressed');
+  document.getElementById('lb-dressed').innerHTML = dressed.length
+    ? dressed.map((x, i) => rankRow(i + 1, x.name, `${x.votes} vote${x.votes === 1 ? '' : 's'}`)).join('')
+    : emptyState('No votes yet');
+
+  // Leaderboard: Best Actor
+  const actor = tally(subs, 'bestActor');
+  document.getElementById('lb-actor').innerHTML = actor.length
+    ? actor.map((x, i) => rankRow(i + 1, x.name, `${x.votes} vote${x.votes === 1 ? '' : 's'}`)).join('')
+    : emptyState('No votes yet');
+
+  // Leaderboard: Wealth
+  const rich = subs
+    .map(s => ({ name: norm(s.name) || 'Unknown', amt: parseMoney(s.wealth) }))
+    .filter(x => x.amt > 0)
+    .sort((a, b) => b.amt - a.amt)
+    .slice(0, 3);
+  document.getElementById('lb-wealth').innerHTML = rich.length
+    ? rich.map((x, i) => rankRow(i + 1, x.name, formatMoney(x.amt))).join('')
+    : emptyState('No wealth declared');
+
+  // Submission cards
+  const list = document.getElementById('submissions-list');
+  if (subs.length === 0) {
+    list.innerHTML = `<div style="text-align:center;font-family:'EB Garamond',serif;font-style:italic;font-size:16px;color:rgba(243,233,210,.38);padding:16px 0;">No verdicts cast yet.</div>`;
+    return;
+  }
+  list.innerHTML = subs.map(s => {
+    const isCorrect = norm(s.murderer) === CORRECT_MURDERER;
+    const wAmt = parseMoney(s.wealth);
+    const date = s.submittedAt ? new Date(s.submittedAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : '';
+    return `<div class="card${isCorrect ? ' card-correct' : ''}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;">
+        <div>
+          <span style="font-family:'Cinzel',serif;font-weight:600;font-size:15px;color:#e9cf8a;">${esc(norm(s.name) || 'Unknown')}</span>
+          ${isCorrect ? '<span class="badge-correct">✓ Correct</span>' : ''}
+        </div>
+        ${date ? `<span style="font-family:'EB Garamond',serif;font-size:13px;color:rgba(243,233,210,.38);white-space:nowrap;padding-top:2px;">${esc(date)}</span>` : ''}
+      </div>
+      <div style="font-family:'EB Garamond',serif;font-size:14px;color:rgba(243,233,210,.55);margin-bottom:6px;">
+        <span style="color:#c9a24b;font-style:italic;">Accused:</span> ${esc(norm(s.murderer) || '—')}
+      </div>
+      ${norm(s.because) ? `<div style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;color:#e7d9b8;line-height:1.45;margin-bottom:10px;padding-left:12px;border-left:2px solid rgba(201,162,75,.3);">"${esc(norm(s.because))}"</div>` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:16px;font-family:'EB Garamond',serif;font-size:14px;color:rgba(243,233,210,.55);">
+        ${norm(s.bestDressed) ? `<span><span style="color:#c9a24b;font-style:italic;">Best Dressed:</span> ${esc(s.bestDressed)}</span>` : ''}
+        ${norm(s.bestActor) ? `<span><span style="color:#c9a24b;font-style:italic;">Best Actor:</span> ${esc(s.bestActor)}</span>` : ''}
+        ${wAmt > 0 ? `<span><span style="color:#c9a24b;font-style:italic;">Wealth:</span> ${esc(formatMoney(wAmt))}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadLocal() {
+  try { return JSON.parse(localStorage.getItem('mm_verdicts') || '[]'); } catch (e) { return []; }
+}
+
+function loadData(callback) {
+  if (!SCRIPT_URL) {
+    callback(loadLocal());
+    return;
+  }
+  document.getElementById('verdict-count').textContent = 'Loading verdicts…';
+  fetch(SCRIPT_URL)
+    .then(r => r.json())
+    .then(data => callback(Array.isArray(data) ? data : []))
+    .catch(() => callback(loadLocal()));
+}
+
+function refresh() {
+  loadData(render);
+}
+
+function copyAll() {
+  const getData = cb => SCRIPT_URL
+    ? fetch(SCRIPT_URL).then(r => r.json()).then(cb).catch(() => cb(loadLocal()))
+    : Promise.resolve().then(() => cb(loadLocal()));
+
+  getData(subs => {
+    const text = JSON.stringify(subs, null, 2);
+    navigator.clipboard.writeText(text).then(() => {
+      const fb = document.getElementById('copy-feedback');
+      fb.textContent = `${subs.length} verdict${subs.length === 1 ? '' : 's'} copied to clipboard.`;
+      setTimeout(() => { fb.textContent = ''; }, 2800);
+    }).catch(() => {
+      const fb = document.getElementById('copy-feedback');
+      fb.textContent = 'Copy failed — check clipboard permissions.';
+      setTimeout(() => { fb.textContent = ''; }, 2800);
+    });
+  });
+}
+
+function clearAll() {
+  const target = SCRIPT_URL ? 'Google Sheet and local cache' : 'local storage';
+  if (!confirm(`Clear all verdicts from ${target}? This cannot be undone.`)) return;
+  try { localStorage.removeItem('mm_verdicts'); } catch (e) {}
+  render([]);
+}
+
+// Marquee bulbs
+const bulbsRow = document.getElementById('bulbs-row');
+for (let i = 0; i < 9; i++) {
+  const b = document.createElement('span');
+  b.className = 'bulb';
+  bulbsRow.appendChild(b);
+}
+
+// Initial load
+loadData(render);
+
+// If no Google Sheet configured, also refresh when another tab submits
+window.addEventListener('storage', e => {
+  if (!SCRIPT_URL && e.key === 'mm_verdicts') loadData(render);
+});
+</script>
+</body>
+</html>
